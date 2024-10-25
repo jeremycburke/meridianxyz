@@ -1,0 +1,18 @@
+# Ignore data and environment folders
+data/
+envs/
+.DS_Store
+Thumbs.db
+
+# Ignore all checkpoint files
+.ipynb_checkpoints/
+
+# Ignore specific file types
+*.csv
+*.parquet
+*.geojson
+*.json
+*.xlsx
+*.xls
+*.shp
+*.pdf
