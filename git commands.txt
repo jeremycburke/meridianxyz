@@ -1,0 +1,16 @@
+**git init**: Initialize a new Git repository in the current directory.
+2. **git clone [url]**: Clone an existing Git repository from a remote URL.
+3. **git add [file]**: Stage a file for the next commit.
+4. **git add .**: Stage all modified files for the next commit.
+5. **git commit -m "[commit message]"**: Create a new commit with the staged changes and a commit message.
+6. **git status**: Check the current status of the repository, including modified and untracked files.
+7. **git log**: View the commit history of the repository.
+8. **git push [remote] [branch]**: Push the local commits to a remote repository and branch.
+9. **git pull [remote] [branch]**: Fetch the latest changes from a remote repository and merge them into the local branch.
+10. **git checkout [branch]**: Switch to a different branch.
+11. **git branch [branch-name]**: Create a new branch.
+12. **git merge [branch]**: Merge the specified branch into the current branch.
+13. **git remote add [remote-name] [url]**: Add a new remote repository.
+14. **git fetch [remote]**: Fetch the latest changes from a remote repository without merging them.
+15. **git stash**: Save the current, uncommitted changes to a stash, allowing you to switch branches or pull changes.
+16. **git stash pop**: Apply the most recent stash and remove it from the stash list.

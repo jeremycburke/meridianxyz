@@ -76,7 +76,7 @@ age_and_sex, commute, computers_and_internet, education, employment, housing, in
 
 # Streamlit app title
 st.title("Meridian XYZ")
-st.header("National Real Estate Analysis Tool")
+st.subheader("National Real Estate Analysis Tool")
 st.markdown(
     '''
     Use this tool to analyze and compare different regions of the US to evaluate alternative investment strategies. Use this information to help you determine where to invest.
@@ -87,19 +87,19 @@ st.markdown(
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("Administrative Boundaries")
     st.markdown('''
+    **Administrative Boundaries**
     - The tool uses the following boundaries:
     - State Boundaries
     - CBSA Boundaries
     - County Boundaries
     - Tract Boundaries
     - Block Group Boundaries
-''')
+    ''')
 
 with col2:
-    st.subheader("Data Sets")
     st.markdown('''
+    **Data Sets**
     - Age and Sex
     - Commute Time to Work
     - Computers and Internet Usage at Home
@@ -109,13 +109,14 @@ with col2:
     - Income and Earnings
     - Poverty
     - Race and Hispanic Origin
-''')
+    ''')
 
 # User input for address
 st.header("Search for an Address")
 # Assuming address is obtained from user input
 address = st.text_input("Enter an address:")
 
+st.header("Address Location and Boundary Check")
 if not address:
     st.write("Please enter an address to see the results.")
     location = None
@@ -227,6 +228,7 @@ comparative_data_json = json.loads(comparative_data.to_json())
 #########################
 # Comparative Map
 #########################
+st.header("Explore Comparative Clusters")
 if location:
     # Define a function to map the "overall_cluster" value to a color
     # Define a function to map cluster values to colors
@@ -285,7 +287,7 @@ if location:
     # Update the GeoJSON with filtered features
     comparative_data_json['features'] = filtered_features
 
-    point_layer = pdk.Layer(
+    point_layer_comp = pdk.Layer(
         "ScatterplotLayer",
         data=[{"coordinates": [location.longitude, location.latitude]}],
         get_position="coordinates",
@@ -321,14 +323,53 @@ if location:
     # Display the PyDeck map
     st.pydeck_chart(
         pdk.Deck(
-            layers=[polygon_comparative_data_layer],
+            layers=[polygon_comparative_data_layer, point_layer_comp],
             initial_view_state=view_state,
             tooltip={"html": f"<b>Region:</b> {{NAME}}<br><b>Cluster:</b> {{{selected_variable}}}", "style": {"color": "white"}},
             map_style='mapbox://styles/mapbox/light-v10'  # Set the map style to light
         )
     )
     st.subheader("Cluster Distribution of: " f"***{selected_variable}***")
-    st.bar_chart(comparative_data[selected_variable].value_counts())
+    import plotly.express as px
+
+    # Create a color map for the bar chart
+    color_map = {
+        0: 'rgba(255, 0, 0, 0.5)',   # Red with transparency
+        1: 'rgba(0, 255, 0, 0.5)',   # Green with transparency
+        2: 'rgba(0, 0, 255, 0.5)',   # Blue with transparency
+        3: 'rgba(255, 255, 0, 0.5)', # Yellow with transparency
+        4: 'rgba(255, 165, 0, 0.5)', # Orange with transparency
+        5: 'rgba(128, 0, 128, 0.5)', # Purple with transparency
+        6: 'rgba(0, 255, 255, 0.5)', # Cyan with transparency
+        7: 'rgba(255, 192, 203, 0.5)', # Pink with transparency
+        8: 'rgba(128, 128, 128, 0.5)', # Gray with transparency
+        9: 'rgba(0, 128, 0, 0.5)',   # Dark Green with transparency
+    }
+
+    # Get the value counts for the selected variable
+    value_counts = comparative_data[selected_variable].value_counts()
+
+    # Create a DataFrame for the bar chart
+    bar_data = value_counts.reset_index()
+    bar_data.columns = ['Cluster', 'Count']
+    bar_data['Color'] = bar_data['Cluster'].apply(lambda x: color_map.get(x, 'rgba(255, 255, 255, 0.5)'))
+
+    # Create a bar chart with custom colors using Plotly
+    fig = px.bar(
+        bar_data,
+        x='Cluster',
+        y='Count',
+        color='Cluster',
+        color_discrete_map=color_map,
+        title=f'Distribution of {selected_variable}',
+        labels={'Cluster': 'Cluster', 'Count': 'Count'}
+    )
+
+    # Update the layout to use the custom colors
+    fig.update_traces(marker=dict(color=bar_data['Color']))
+
+    # Display the bar chart in Streamlit
+    st.plotly_chart(fig)
 
     st.header("Data Tables")
 
