@@ -58,6 +58,7 @@ if geo_data.empty:
 else:
     
     # Create a PyDeck layer with the required styling
+    
     layer = pdk.Layer(
         "GeoJsonLayer",
         geojson_data,
@@ -75,7 +76,6 @@ else:
     )
 
     # Display the map with PyDeck
-    # @st.cache
     st.pydeck_chart(pdk.Deck(
         layers=[layer],
         initial_view_state=view_state,
